@@ -1,7 +1,9 @@
 package com.yahoo.learn.android.mylocalworld.adapters;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -17,14 +19,17 @@ import com.yahoo.learn.android.mylocalworld.models.BaseItem;
 public class CustomItemAdapter {
 
     // TODO: Customize based on item type
-    static View getViewForItem(BaseItem item, View view) {
+    static View getViewForItem(BaseItem item, View view, boolean isListView) {
         ImageView ivIcon = (ImageView) view.findViewById(R.id.ivIcon);
         TextView tvTitle = (TextView) view.findViewById(R.id.tvTitle);
         TextView tvDesc = (TextView) view.findViewById(R.id.tvDesc);
         ImageView ivHighResImage = (ImageView) view.findViewById(R.id.ivHighResImage);
+        TextView tvDummy = (TextView) view.findViewById(R.id.tvDummy);
 
         tvTitle.setText(item.getTitle());
         tvDesc.setText(item.getDesc());
+
+        tvDummy.setVisibility(isListView ? View.VISIBLE : View.GONE);
 
         if (item.getHighResImageURL() != null) {
             ivIcon.setVisibility(View.GONE);

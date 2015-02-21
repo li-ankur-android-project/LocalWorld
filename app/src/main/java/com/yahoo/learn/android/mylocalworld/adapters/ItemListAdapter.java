@@ -28,7 +28,7 @@ public class ItemListAdapter extends ArrayAdapter <BaseItem> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_local_stuff, parent, false);
         }
 
-        return CustomItemAdapter.getViewForItem(item, convertView);
+        return CustomItemAdapter.getViewForItem(item, convertView, true);
     }
 
 
