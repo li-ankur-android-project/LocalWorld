@@ -105,7 +105,7 @@ public class MainActivity extends ActionBarActivity implements
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                performSearchQuery();
+                performSearchQuery(s);
                 return true;
             }
 
@@ -119,7 +119,7 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     // TODO Li - fetch items
-    private void performSearchQuery() {
+    private void performSearchQuery(String searchQuery) {
         // TODO
         mItems.clear();
         populateItems();

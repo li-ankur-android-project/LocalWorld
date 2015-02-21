@@ -40,11 +40,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/activities/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2739" max-vertical-offset="6290">
-              <caret line="179" column="49" selection-start-line="179" selection-start-column="49" selection-end-line="179" selection-end-column="49" />
+            <state vertical-scroll-proportion="0.7338129" vertical-offset="1700" max-vertical-offset="6290">
+              <caret line="120" column="28" selection-start-line="120" selection-start-column="28" selection-end-line="120" selection-end-column="28" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2475#2485#0" expanded="true" />
@@ -53,10 +53,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BaseItem.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="BaseItem.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/models/BaseItem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7232558" vertical-offset="403" max-vertical-offset="901">
+            <state vertical-scroll-proportion="0.0" vertical-offset="403" max-vertical-offset="901">
               <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
               <folding />
             </state>
@@ -976,11 +976,11 @@
         <option value="$PROJECT_DIR$/app/src/main/res/layout/item_fragment_holder.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/item_todo.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/adapters/CustomWindowAdapter.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/activities/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/models/BaseItem.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/adapters/ItemListAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/adapters/CustomItemAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/fragments/MapViewFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/activities/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -1744,6 +1744,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-4.857143" vertical-offset="952" max-vertical-offset="14127">
           <caret line="104" column="23" selection-start-line="104" selection-start-column="23" selection-end-line="104" selection-end-column="23" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1782,17 +1783,6 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="136" max-vertical-offset="765">
           <caret line="17" column="35" selection-start-line="17" selection-start-column="35" selection-end-line="17" selection-end-column="35" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/activities/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2739" max-vertical-offset="6290">
-          <caret line="179" column="49" selection-start-line="179" selection-start-column="49" selection-end-line="179" selection-end-column="49" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2475#2485#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1848,9 +1838,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/models/BaseItem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7232558" vertical-offset="403" max-vertical-offset="901">
+        <state vertical-scroll-proportion="0.0" vertical-offset="403" max-vertical-offset="901">
           <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/yahoo/learn/android/mylocalworld/activities/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7338129" vertical-offset="1700" max-vertical-offset="6290">
+          <caret line="120" column="28" selection-start-line="120" selection-start-column="28" selection-end-line="120" selection-end-column="28" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2475#2485#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
