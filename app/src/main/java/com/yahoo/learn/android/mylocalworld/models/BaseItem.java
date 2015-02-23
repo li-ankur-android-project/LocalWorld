@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * Created by ankurj on 2/20/2015.
  */
 public class BaseItem {
+<<<<<<< HEAD
     private static final BaseItem       mInstance = new BaseItem();
 
     protected LatLng      position;
@@ -20,6 +21,15 @@ public class BaseItem {
     protected String      title;
     protected String      externalURL;
     protected String      highResImageURL;
+=======
+    private LatLng      position;
+    private String      imageIconURL;
+    private String      desc;
+    private String      title;
+    private String      externalURL;
+    private String      highResImageURL;
+    private String      address;
+>>>>>>> fb89a8dd45df9b3be31e4f468bf634e62648184f
 
 
     public String getHighResImageURL() {
@@ -65,8 +75,32 @@ public class BaseItem {
 
     }
 
+<<<<<<< HEAD
     public ArrayList<BaseItem> fromJSONArray(JSONArray jsonArray) {
 
+=======
+    public static BaseItem fromYelpJSON(JSONObject jsonObject) throws JSONException{
+        BaseItem baseItem = new BaseItem();
+
+        baseItem.title = jsonObject.getString("name");
+
+        double lat = jsonObject.getJSONObject("location").getJSONObject("coordinate").getDouble("latitude");
+        double lng = jsonObject.getJSONObject("location").getJSONObject("coordinate").getDouble("longitude");
+        baseItem.position = new LatLng(lat, lng);
+
+        baseItem.address = jsonObject.getJSONObject("location").getString("address");
+
+        baseItem.imageIconURL = jsonObject.getString("snippet_image_url");
+        //TODO Yelp doesn't provide description
+        baseItem.desc = "From Yelp";
+        baseItem.externalURL = jsonObject.getString("url");
+
+        return baseItem;
+
+    }
+
+    public static ArrayList<BaseItem> fromJSONArray(JSONArray jsonArray) {
+>>>>>>> fb89a8dd45df9b3be31e4f468bf634e62648184f
 
         ArrayList<BaseItem> items = new ArrayList<BaseItem>();
 
@@ -83,7 +117,25 @@ public class BaseItem {
         return items;
     }
 
+<<<<<<< HEAD
     public static BaseItem getInstance() {
         return mInstance;
+=======
+    public static ArrayList<BaseItem> fromYelpJSONArray(JSONArray jsonArray) {
+
+        ArrayList<BaseItem> items = new ArrayList<BaseItem>();
+
+        for (int i = 0; i< jsonArray.length(); i++)
+        {
+            try {
+                BaseItem item = BaseItem.fromYelpJSON(jsonArray.getJSONObject(i));
+                items.add(item);
+            }catch (JSONException e) {
+                continue;
+            }
+        }
+
+        return items;
+>>>>>>> fb89a8dd45df9b3be31e4f468bf634e62648184f
     }
 }

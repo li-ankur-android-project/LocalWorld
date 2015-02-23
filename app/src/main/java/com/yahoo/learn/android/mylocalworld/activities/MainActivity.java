@@ -69,7 +69,6 @@ public class MainActivity extends ActionBarActivity implements
     private ViewPager           mViewPager;
     private ListFragment        mListFragment;
     private MapViewFragment     mMapFragment;
-    public static Context context;
 
     /*
      * Define a request code to send to Google Play services This code is
@@ -83,11 +82,14 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+<<<<<<< HEAD
         context=this;
 
         mLocation.setLatitude(36.1);
         mLocation.setLongitude(-115.2);
 
+=======
+>>>>>>> fb89a8dd45df9b3be31e4f468bf634e62648184f
         mListFragment = new ListFragment();
         mMapFragment = new MapViewFragment();
 
@@ -102,9 +104,12 @@ public class MainActivity extends ActionBarActivity implements
         PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         // Attach the view pager to the tab strip
         tabsStrip.setViewPager(mViewPager);
+<<<<<<< HEAD
 
 //        populateItems();
 
+=======
+>>>>>>> fb89a8dd45df9b3be31e4f468bf634e62648184f
     }
 
 
@@ -135,7 +140,13 @@ public class MainActivity extends ActionBarActivity implements
     // TODO Li - fetch items
     private void performSearchQuery() {
 
+        if (location == null){
+            Toast.makeText(this, "location not updated", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         mItems.clear();
+<<<<<<< HEAD
         notifyFragmentAdapters();
 
         // Populate some dummy items
@@ -168,6 +179,34 @@ public class MainActivity extends ActionBarActivity implements
             mItems.add(instance.fromJSON(null));
         } catch (JSONException e) {
             e.printStackTrace();
+=======
+
+        double lat = location.getLatitude();
+        double lng = location.getLongitude();
+
+        ApiClient.getYelpLocationByLatLong(searchQuery, lat, lng, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("DEBUG", "Success: " + response.toString());
+                populateItems(response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject response){
+                Log.d("DEBUG", "Failure: " + response.toString());
+            }
+        });
+    }
+
+    // TODO Need to figure out how to handle json's from different Data Providers: Yelp, FourSquare, Instagram
+    private void populateItems(JSONObject json) {
+        try {
+            mItems = BaseItem.fromYelpJSONArray(json.getJSONArray("businesses"));
+            notifyFragmentAdapters();
+        }
+        catch (JSONException e){
+            Log.d("ERROR", "failed to parse; " + e);
+>>>>>>> fb89a8dd45df9b3be31e4f468bf634e62648184f
         }
     }
 
