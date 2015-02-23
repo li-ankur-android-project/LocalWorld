@@ -19,6 +19,7 @@ import java.util.Map;
 public class ApiClient {
 
     private static final String INSTAGRAM_BASE_URL =  "https://api.instagram.com/v1/locations/search";
+    private static final String INSTAGRAM_MEDIA_URL = "https://api.instagram.com/v1/media/search";
     private static final String INSTAGRAM_CLIENT_ID = "68ecacb5efa94844a70e7a6e55e44d2d";
     private static final String YELP_SEARCH_URL = "http://api.yelp.com/v2/search";
 
@@ -93,5 +94,15 @@ public class ApiClient {
             this.service.signRequest(this.accessToken, request);
             return request.getHeaders();
         }
+    }
+
+
+    public static void searchInstagram(double lat, double lng, JsonHttpResponseHandler handler) {
+        RequestParams params = new RequestParams();
+        params.put("lat", lat);
+        params.put("lng", lng);
+        params.put("client_id", INSTAGRAM_CLIENT_ID);
+
+        new AsyncHttpClient().get(INSTAGRAM_MEDIA_URL, params, handler);
     }
 }

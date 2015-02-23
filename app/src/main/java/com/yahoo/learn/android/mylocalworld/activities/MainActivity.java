@@ -38,6 +38,8 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.yahoo.learn.android.mylocalworld.fragments.ListFragment;
 import com.yahoo.learn.android.mylocalworld.fragments.MapViewFragment;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
+import com.yahoo.learn.android.mylocalworld.models.InstagramItem;
+import com.yahoo.learn.android.mylocalworld.models.YelpItem;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -58,10 +60,11 @@ public class MainActivity extends ActionBarActivity implements
     private GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private long UPDATE_INTERVAL = 60000;  /* 60 secs */
+    private long UPDATE_INTERVAL = 300000;  /* 5 min */
     private long FASTEST_INTERVAL = 5000; /* 5 secs */
-    private Location location = null;
 
+    private String mSearchQuery = "";
+    private Location mLocation = new Location("My Location");
 
     private ArrayList<BaseItem> mItems = new ArrayList<BaseItem>();
     private ViewPager           mViewPager;
@@ -80,6 +83,11 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        context=this;
+
+        mLocation.setLatitude(36.1);
+        mLocation.setLongitude(-115.2);
+
         mListFragment = new ListFragment();
         mMapFragment = new MapViewFragment();
 
@@ -94,6 +102,8 @@ public class MainActivity extends ActionBarActivity implements
         PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         // Attach the view pager to the tab strip
         tabsStrip.setViewPager(mViewPager);
+
+//        populateItems();
     }
 
 
@@ -107,7 +117,8 @@ public class MainActivity extends ActionBarActivity implements
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                performSearchQuery(s);
+                mSearchQuery = s;
+                performSearchQuery();
                 return true;
             }
 
@@ -120,24 +131,48 @@ public class MainActivity extends ActionBarActivity implements
         return true;
     }
 
-    // TODO Li - fetch items
-    private void performSearchQuery(String searchQuery) {
+    private void performSearchQuery() {
 
-        if (location == null){
+        if (mLocation == null){
             Toast.makeText(this, "location not updated", Toast.LENGTH_LONG).show();
             return;
         }
 
         mItems.clear();
+        notifyFragmentAdapters();
 
-        double lat = location.getLatitude();
-        double lng = location.getLongitude();
+        // Populate some dummy items
+//        populateItems();
+        ApiClient.searchInstagram(mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("DEBUG", response.toString());
 
-        ApiClient.getYelpLocationByLatLong(searchQuery, lat, lng, new JsonHttpResponseHandler() {
+                try {
+                    synchronized (MainActivity.this) {
+                        mItems.addAll(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
+                        notifyFragmentAdapters();
+                    }
+                } catch (JSONException e) {
+                    Log.e("ERROR", "failedd to parse; " + e);
+                }
+            }
+        });
+
+
+
+        ApiClient.getYelpLocationByLatLong(mSearchQuery, mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("DEBUG", "Success: " + response.toString());
-                populateItems(response);
+                try {
+                    synchronized (MainActivity.this) {
+                        mItems.addAll(YelpItem.getInstance().fromJSONArray(response.getJSONArray("businesses")));
+                        notifyFragmentAdapters();
+                    }
+                } catch (JSONException e) {
+                    Log.e("ERROR", "failedd to parse; " + e);
+                }
             }
 
             @Override
@@ -145,18 +180,9 @@ public class MainActivity extends ActionBarActivity implements
                 Log.d("DEBUG", "Failure: " + response.toString());
             }
         });
+
     }
 
-    // TODO Need to figure out how to handle json's from different Data Providers: Yelp, FourSquare, Instagram
-    private void populateItems(JSONObject json) {
-        try {
-            mItems = BaseItem.fromYelpJSONArray(json.getJSONArray("businesses"));
-            notifyFragmentAdapters();
-        }
-        catch (JSONException e){
-            Log.d("ERROR", "failed to parse; " + e);
-        }
-    }
 
     private void notifyFragmentAdapters() {
         mListFragment.onItemsChanged();
@@ -291,22 +317,25 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
-        location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
 //            Toast.makeText(this, "GPS location was found!", Toast.LENGTH_SHORT).show();
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-
-            // TODO call performSearch here since we know the location
-
-
-            MapViewFragment frag = mMapFragment;
-            if (frag != null)
-                frag.animateCamera(cameraUpdate);
+            performLocationUpdate(location);
             startLocationUpdates();
         } else {
             Toast.makeText(this, "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void performLocationUpdate(Location location) {
+        mLocation = location;
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+
+        if (mMapFragment != null)
+            mMapFragment.animateCamera(cameraUpdate);
+
+        performSearchQuery();
     }
 
     protected void startLocationUpdates() {
@@ -319,12 +348,19 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void onLocationChanged(Location location) {
-        // Report to the UI that the location was updated
-        String msg = "Updated Location: " +
-                Double.toString(location.getLatitude()) + "," +
-                Double.toString(location.getLongitude());
-//        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        // TODO - ensure that app is in the foreground before calling any of the below code
 
+        // Check if we are far enough (500 meters) from the previous saved location
+        if (mLocation.distanceTo(location) > 500.0) {
+            performLocationUpdate(location);
+
+            // Report to the UI that the location was updated
+            String msg = "Updated Location: " +
+                    Double.toString(location.getLatitude()) + "," +
+                    Double.toString(location.getLongitude());
+
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /*
@@ -369,6 +405,9 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
+    public Location getMapLocation() {
+        return mLocation;
+    }
 
 
     // Define a DialogFragment that displays the error dialog

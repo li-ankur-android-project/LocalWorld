@@ -12,13 +12,15 @@ import java.util.ArrayList;
  * Created by ankurj on 2/20/2015.
  */
 public class BaseItem {
-    private LatLng      position;
-    private String      imageIconURL;
-    private String      desc;
-    private String      title;
-    private String      externalURL;
-    private String      highResImageURL;
-    private String      address;
+    private static final BaseItem       mInstance = new BaseItem();
+
+    protected LatLng      position;
+    protected String      imageIconURL;
+    protected String      desc;
+    protected String      title;
+    protected String      externalURL;
+    protected String      highResImageURL;
+    protected String      address;
 
 
     public String getHighResImageURL() {
@@ -48,7 +50,7 @@ public class BaseItem {
 
     public String toString() { return title; }
 
-    public static BaseItem fromJSON(JSONObject jsonObject) {
+    public BaseItem fromJSON(JSONObject jsonObject) throws JSONException {
         BaseItem baseItem = new BaseItem();
 
         baseItem.title = "Title" + Math.random();
@@ -64,57 +66,25 @@ public class BaseItem {
 
     }
 
-    public static BaseItem fromYelpJSON(JSONObject jsonObject) throws JSONException{
-        BaseItem baseItem = new BaseItem();
-
-        baseItem.title = jsonObject.getString("name");
-
-        double lat = jsonObject.getJSONObject("location").getJSONObject("coordinate").getDouble("latitude");
-        double lng = jsonObject.getJSONObject("location").getJSONObject("coordinate").getDouble("longitude");
-        baseItem.position = new LatLng(lat, lng);
-
-        baseItem.address = jsonObject.getJSONObject("location").getString("address");
-
-        baseItem.imageIconURL = jsonObject.getString("snippet_image_url");
-        //TODO Yelp doesn't provide description
-        baseItem.desc = "From Yelp";
-        baseItem.externalURL = jsonObject.getString("url");
-
-        return baseItem;
-
-    }
-
-    public static ArrayList<BaseItem> fromJSONArray(JSONArray jsonArray) {
+    public ArrayList<BaseItem> fromJSONArray(JSONArray jsonArray) {
 
         ArrayList<BaseItem> items = new ArrayList<BaseItem>();
 
         for (int i = 0; i< jsonArray.length(); i++)
         {
             try {
-                BaseItem item = BaseItem.fromJSON(jsonArray.getJSONObject(i));
+                BaseItem item = fromJSON(jsonArray.getJSONObject(i));
                 items.add(item);
-            }catch (JSONException e) {
-                continue;
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
 
         return items;
     }
 
-    public static ArrayList<BaseItem> fromYelpJSONArray(JSONArray jsonArray) {
-
-        ArrayList<BaseItem> items = new ArrayList<BaseItem>();
-
-        for (int i = 0; i< jsonArray.length(); i++)
-        {
-            try {
-                BaseItem item = BaseItem.fromYelpJSON(jsonArray.getJSONObject(i));
-                items.add(item);
-            }catch (JSONException e) {
-                continue;
-            }
-        }
-
-        return items;
+    public static BaseItem getInstance() {
+        return mInstance;
     }
+
 }
