@@ -17,7 +17,7 @@ import java.util.List;
 public class ItemListAdapter extends ArrayAdapter <BaseItem> {
 
     public ItemListAdapter(Context context, List<BaseItem> objects) {
-        super(context, android.R.layout.simple_list_item_1, objects);
+        super(context, R.layout.item_local_stuff, objects);
     }
 
     @Override

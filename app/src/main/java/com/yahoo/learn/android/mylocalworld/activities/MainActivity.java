@@ -2,6 +2,7 @@ package com.yahoo.learn.android.mylocalworld.activities;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
@@ -26,20 +27,23 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.yahoo.learn.android.mylocalworld.R;
 import com.yahoo.learn.android.mylocalworld.adapters.CustomWindowAdapter;
 import com.yahoo.learn.android.mylocalworld.adapters.HomePagerAdapter;
-import com.yahoo.learn.android.mylocalworld.fragments.ItemFragment;
+import com.yahoo.learn.android.mylocalworld.ApiClient.ApiClient;
 import com.astuetz.PagerSlidingTabStrip;
 import com.yahoo.learn.android.mylocalworld.fragments.ListFragment;
 import com.yahoo.learn.android.mylocalworld.fragments.MapViewFragment;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
 
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity implements
@@ -56,12 +60,14 @@ public class MainActivity extends ActionBarActivity implements
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 60000;  /* 60 secs */
     private long FASTEST_INTERVAL = 5000; /* 5 secs */
+    private Location location = null;
 
 
     private ArrayList<BaseItem> mItems = new ArrayList<BaseItem>();
     private ViewPager           mViewPager;
     private ListFragment        mListFragment;
     private MapViewFragment     mMapFragment;
+    public static Context context;
 
     /*
      * Define a request code to send to Google Play services This code is
@@ -74,6 +80,8 @@ public class MainActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        context=this;
 
         mListFragment = new ListFragment();
         mMapFragment = new MapViewFragment();
@@ -120,12 +128,26 @@ public class MainActivity extends ActionBarActivity implements
 
     // TODO Li - fetch items
     private void performSearchQuery(String searchQuery) {
-        // TODO
-        mItems.clear();
-        populateItems();
 
-        // Cannot call on initial load, only on subsequent searches or loads
-        notifyFragmentAdapters();
+        mItems.clear();
+        //populateItems();
+       ApiClient.getInstagramLocation(37.583680, -122.065058, new JsonHttpResponseHandler() {
+           @Override
+           public void onSuccess(int statusCode, Header[] headers, JSONObject response){
+               Log.d("DEBUG", response.toString());
+               // TODO
+
+
+               try {
+                   mItems = BaseItem.fromJSONArray(response.getJSONArray("data"));
+                   notifyFragmentAdapters();
+
+               }
+               catch (JSONException e){
+                    Log.d("ERROR", "failedd to parse; " + e);
+               }
+           }
+       });
     }
 
     // TODO Li - fetch items
@@ -270,11 +292,14 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
-        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
 //            Toast.makeText(this, "GPS location was found!", Toast.LENGTH_SHORT).show();
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+
+            // TODO call performSearch here since we know the location
+
 
             MapViewFragment frag = mMapFragment;
             if (frag != null)
@@ -369,6 +394,4 @@ public class MainActivity extends ActionBarActivity implements
             return mDialog;
         }
     }
-
-
 }

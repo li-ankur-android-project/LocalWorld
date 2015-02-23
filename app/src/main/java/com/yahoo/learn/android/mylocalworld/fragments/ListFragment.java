@@ -29,7 +29,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mItems = ((MainActivity) getActivity()).getItems();
+        mItems = new ArrayList<>();
     }
 
 
@@ -63,6 +63,8 @@ public class ListFragment extends Fragment {
 
 
     public void onItemsChanged() {
+        mItems.clear();
+        mItems.addAll(((MainActivity) getActivity()).getItems());
         mAdapter.notifyDataSetChanged();
     }
 }

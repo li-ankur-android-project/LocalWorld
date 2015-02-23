@@ -2,7 +2,11 @@ package com.yahoo.learn.android.mylocalworld.models;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by ankurj on 2/20/2015.
@@ -57,5 +61,22 @@ public class BaseItem {
 
         return baseItem;
 
+    }
+
+    public static ArrayList<BaseItem> fromJSONArray(JSONArray jsonArray) {
+
+        ArrayList<BaseItem> items = new ArrayList<BaseItem>();
+
+        for (int i = 0; i< jsonArray.length(); i++)
+        {
+            try {
+                BaseItem item = BaseItem.fromJSON(jsonArray.getJSONObject(i));
+                items.add(item);
+            }catch (JSONException e) {
+                continue;
+            }
+        }
+
+        return items;
     }
 }
