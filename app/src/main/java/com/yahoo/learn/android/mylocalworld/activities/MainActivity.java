@@ -129,8 +129,8 @@ public class MainActivity extends ActionBarActivity implements
     // TODO Li - fetch items
     private void performSearchQuery(String searchQuery) {
 
-        mItems.clear();
-        //populateItems();
+       mItems.clear();
+
        ApiClient.getInstagramLocation(37.583680, -122.065058, new JsonHttpResponseHandler() {
            @Override
            public void onSuccess(int statusCode, Header[] headers, JSONObject response){
@@ -144,10 +144,22 @@ public class MainActivity extends ActionBarActivity implements
 
                }
                catch (JSONException e){
-                    Log.d("ERROR", "failedd to parse; " + e);
+                    Log.d("ERROR", "failed to parse; " + e);
                }
            }
        });
+
+        ApiClient.getYelpLocationByLatLong("food", 37.583680, -122.065058, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("DEBUG", "[LLXXX]: "+response.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject jsonObject){
+                Log.d("DEBUG", "[LLXXX]: Failure: "+jsonObject);
+            }
+        });
     }
 
     // TODO Li - fetch items
