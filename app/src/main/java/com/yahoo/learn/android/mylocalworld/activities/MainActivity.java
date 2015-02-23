@@ -39,6 +39,7 @@ import com.yahoo.learn.android.mylocalworld.fragments.ListFragment;
 import com.yahoo.learn.android.mylocalworld.fragments.MapViewFragment;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
 import com.yahoo.learn.android.mylocalworld.models.InstagramItem;
+import com.yahoo.learn.android.mylocalworld.models.YelpItem;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -59,8 +60,8 @@ public class MainActivity extends ActionBarActivity implements
     private GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private long UPDATE_INTERVAL = 120000;  /* 60 secs */
-    private long FASTEST_INTERVAL = 10000; /* 5 secs */
+    private long UPDATE_INTERVAL = 300000;  /* 5 min */
+    private long FASTEST_INTERVAL = 5000; /* 5 secs */
 
     private String mSearchQuery = "";
     private Location mLocation = new Location("My Location");
@@ -82,14 +83,11 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-<<<<<<< HEAD
-        context=this;
+//        context=this;
 
         mLocation.setLatitude(36.1);
         mLocation.setLongitude(-115.2);
 
-=======
->>>>>>> fb89a8dd45df9b3be31e4f468bf634e62648184f
         mListFragment = new ListFragment();
         mMapFragment = new MapViewFragment();
 
@@ -104,12 +102,8 @@ public class MainActivity extends ActionBarActivity implements
         PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         // Attach the view pager to the tab strip
         tabsStrip.setViewPager(mViewPager);
-<<<<<<< HEAD
 
 //        populateItems();
-
-=======
->>>>>>> fb89a8dd45df9b3be31e4f468bf634e62648184f
     }
 
 
@@ -137,16 +131,14 @@ public class MainActivity extends ActionBarActivity implements
         return true;
     }
 
-    // TODO Li - fetch items
     private void performSearchQuery() {
 
-        if (location == null){
+        if (mLocation == null){
             Toast.makeText(this, "location not updated", Toast.LENGTH_LONG).show();
             return;
         }
 
         mItems.clear();
-<<<<<<< HEAD
         notifyFragmentAdapters();
 
         // Populate some dummy items
@@ -155,40 +147,32 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("DEBUG", response.toString());
-                // TODO
-
 
                 try {
-                    mItems.addAll(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
-                    notifyFragmentAdapters();
-
+                    synchronized (MainActivity.this) {
+                        mItems.addAll(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
+                        notifyFragmentAdapters();
+                    }
                 } catch (JSONException e) {
-                    Log.d("ERROR", "failedd to parse; " + e);
+                    Log.e("ERROR", "failedd to parse; " + e);
                 }
             }
         });
-    }
 
-    // TODO Li - fetch items
-    private void populateItems() {
-        BaseItem instance = BaseItem.getInstance();
-        try {
-            mItems.add(instance.fromJSON(null));
-            mItems.add(instance.fromJSON(null));
-            mItems.add(instance.fromJSON(null));
-            mItems.add(instance.fromJSON(null));
-        } catch (JSONException e) {
-            e.printStackTrace();
-=======
 
-        double lat = location.getLatitude();
-        double lng = location.getLongitude();
 
-        ApiClient.getYelpLocationByLatLong(searchQuery, lat, lng, new JsonHttpResponseHandler() {
+        ApiClient.getYelpLocationByLatLong(mSearchQuery, mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("DEBUG", "Success: " + response.toString());
-                populateItems(response);
+                try {
+                    synchronized (MainActivity.this) {
+                        mItems.addAll(YelpItem.getInstance().fromJSONArray(response.getJSONArray("businesses")));
+                        notifyFragmentAdapters();
+                    }
+                } catch (JSONException e) {
+                    Log.e("ERROR", "failedd to parse; " + e);
+                }
             }
 
             @Override
@@ -196,19 +180,9 @@ public class MainActivity extends ActionBarActivity implements
                 Log.d("DEBUG", "Failure: " + response.toString());
             }
         });
+
     }
 
-    // TODO Need to figure out how to handle json's from different Data Providers: Yelp, FourSquare, Instagram
-    private void populateItems(JSONObject json) {
-        try {
-            mItems = BaseItem.fromYelpJSONArray(json.getJSONArray("businesses"));
-            notifyFragmentAdapters();
-        }
-        catch (JSONException e){
-            Log.d("ERROR", "failed to parse; " + e);
->>>>>>> fb89a8dd45df9b3be31e4f468bf634e62648184f
-        }
-    }
 
     private void notifyFragmentAdapters() {
         mListFragment.onItemsChanged();
@@ -374,7 +348,9 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void onLocationChanged(Location location) {
+        // TODO - ensure that app is in the foreground before calling any of the below code
 
+        // Check if we are far enough (500 meters) from the previous saved location
         if (mLocation.distanceTo(location) > 500.0) {
             performLocationUpdate(location);
 
