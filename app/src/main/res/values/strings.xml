@@ -4,4 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="search">Search</string>
+    <string name="item_title">Title</string>
+    <string name="item_desc">Desc</string>
 </resources>

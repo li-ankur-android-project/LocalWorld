@@ -23,7 +23,7 @@ public class CustomWindowAdapter implements GoogleMap.InfoWindowAdapter {
         // Getting view from the layout file
         View v = mActivity.getLayoutInflater().inflate(R.layout.item_local_stuff, null);
 
-        return CustomItemAdapter.getViewForItem(mActivity.getItems().get(Integer.parseInt(marker.getSnippet())), v);
+        return CustomItemAdapter.getViewForItem(mActivity.getItems().get(Integer.parseInt(marker.getSnippet())), v, false);
     }
 
     // This changes the frame of the info window; returning null uses the default frame.
