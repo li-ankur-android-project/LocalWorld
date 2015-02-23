@@ -67,7 +67,6 @@ public class MainActivity extends ActionBarActivity implements
     private ViewPager           mViewPager;
     private ListFragment        mListFragment;
     private MapViewFragment     mMapFragment;
-    public static Context context;
 
     /*
      * Define a request code to send to Google Play services This code is
@@ -80,8 +79,6 @@ public class MainActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        context=this;
 
         mListFragment = new ListFragment();
         mMapFragment = new MapViewFragment();
@@ -97,9 +94,6 @@ public class MainActivity extends ActionBarActivity implements
         PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         // Attach the view pager to the tab strip
         tabsStrip.setViewPager(mViewPager);
-
-        populateItems();
-
     }
 
 
@@ -129,46 +123,39 @@ public class MainActivity extends ActionBarActivity implements
     // TODO Li - fetch items
     private void performSearchQuery(String searchQuery) {
 
-       mItems.clear();
+        if (location == null){
+            Toast.makeText(this, "location not updated", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-       ApiClient.getInstagramLocation(37.583680, -122.065058, new JsonHttpResponseHandler() {
-           @Override
-           public void onSuccess(int statusCode, Header[] headers, JSONObject response){
-               Log.d("DEBUG", response.toString());
-               // TODO
+        mItems.clear();
 
+        double lat = location.getLatitude();
+        double lng = location.getLongitude();
 
-               try {
-                   mItems = BaseItem.fromJSONArray(response.getJSONArray("data"));
-                   notifyFragmentAdapters();
-
-               }
-               catch (JSONException e){
-                    Log.d("ERROR", "failed to parse; " + e);
-               }
-           }
-       });
-
-        ApiClient.getYelpLocationByLatLong("food", 37.583680, -122.065058, new JsonHttpResponseHandler() {
+        ApiClient.getYelpLocationByLatLong(searchQuery, lat, lng, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", "[LLXXX]: "+response.toString());
+                Log.d("DEBUG", "Success: " + response.toString());
+                populateItems(response);
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject jsonObject){
-                Log.d("DEBUG", "[LLXXX]: Failure: "+jsonObject);
+            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject response){
+                Log.d("DEBUG", "Failure: " + response.toString());
             }
         });
     }
 
-    // TODO Li - fetch items
-    private void populateItems() {
-        mItems.add(BaseItem.fromJSON(null));
-        mItems.add(BaseItem.fromJSON(null));
-        mItems.add(BaseItem.fromJSON(null));
-        mItems.add(BaseItem.fromJSON(null));
-
+    // TODO Need to figure out how to handle json's from different Data Providers: Yelp, FourSquare, Instagram
+    private void populateItems(JSONObject json) {
+        try {
+            mItems = BaseItem.fromYelpJSONArray(json.getJSONArray("businesses"));
+            notifyFragmentAdapters();
+        }
+        catch (JSONException e){
+            Log.d("ERROR", "failed to parse; " + e);
+        }
     }
 
     private void notifyFragmentAdapters() {
