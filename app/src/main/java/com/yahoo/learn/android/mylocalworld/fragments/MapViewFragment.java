@@ -75,7 +75,7 @@ public class MapViewFragment extends Fragment {
                     mGoogleMap = map;
                     if (listener != null)
                         listener.onRssItemSelected(map);
-                    setMarkers();
+//                    setMarkers();
                 }
             });
         } else {
@@ -119,7 +119,7 @@ public class MapViewFragment extends Fragment {
         }
 
         if (items.size() > 0)
-            setMapBounds(activity.getMapLocation(), items, 10);
+            setMapBounds(activity.getMapLocation(), items, 20);
     }
 
 

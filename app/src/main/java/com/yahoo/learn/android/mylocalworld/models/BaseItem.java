@@ -50,6 +50,8 @@ public class BaseItem {
 
     public String toString() { return title; }
 
+
+    // Code to create dummy objects
     public BaseItem fromJSON(JSONObject jsonObject) throws JSONException {
         BaseItem baseItem = new BaseItem();
 

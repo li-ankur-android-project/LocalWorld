@@ -40,12 +40,15 @@ import com.yahoo.learn.android.mylocalworld.fragments.MapViewFragment;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
 import com.yahoo.learn.android.mylocalworld.models.InstagramItem;
 import com.yahoo.learn.android.mylocalworld.models.YelpItem;
+import com.yahoo.learn.android.mylocalworld.util.LocationComparator;
 
 import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity implements
@@ -149,10 +152,7 @@ public class MainActivity extends ActionBarActivity implements
                 Log.d("DEBUG", response.toString());
 
                 try {
-                    synchronized (MainActivity.this) {
-                        mItems.addAll(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
-                        notifyFragmentAdapters();
-                    }
+                    addItemsToList(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
                 } catch (JSONException e) {
                     Log.e("ERROR", "failedd to parse; " + e);
                 }
@@ -166,10 +166,7 @@ public class MainActivity extends ActionBarActivity implements
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("DEBUG", "Success: " + response.toString());
                 try {
-                    synchronized (MainActivity.this) {
-                        mItems.addAll(YelpItem.getInstance().fromJSONArray(response.getJSONArray("businesses")));
-                        notifyFragmentAdapters();
-                    }
+                    addItemsToList(YelpItem.getInstance().fromJSONArray(response.getJSONArray("businesses")));
                 } catch (JSONException e) {
                     Log.e("ERROR", "failedd to parse; " + e);
                 }
@@ -183,6 +180,12 @@ public class MainActivity extends ActionBarActivity implements
 
     }
 
+
+    private synchronized void addItemsToList(List<BaseItem> items) {
+        mItems.addAll(items);
+        Collections.sort(mItems, new LocationComparator(mLocation));
+        notifyFragmentAdapters();
+    }
 
     private void notifyFragmentAdapters() {
         mListFragment.onItemsChanged();
