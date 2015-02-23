@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.yahoo.learn.android.mylocalworld.R;
 import com.yahoo.learn.android.mylocalworld.activities.MainActivity;
@@ -29,7 +28,8 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mItems = new ArrayList<>();
+        mItems = ((MainActivity) getActivity()).getItems();
+
     }
 
 
@@ -63,8 +63,8 @@ public class ListFragment extends Fragment {
 
 
     public void onItemsChanged() {
-        mItems.clear();
-        mItems.addAll(((MainActivity) getActivity()).getItems());
+//        mItems.clear();
+//        mItems.addAll(((MainActivity) getActivity()).getItems());
         mAdapter.notifyDataSetChanged();
     }
 }

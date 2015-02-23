@@ -38,6 +38,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.yahoo.learn.android.mylocalworld.fragments.ListFragment;
 import com.yahoo.learn.android.mylocalworld.fragments.MapViewFragment;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
+import com.yahoo.learn.android.mylocalworld.models.InstagramItem;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -58,10 +59,11 @@ public class MainActivity extends ActionBarActivity implements
     private GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private long UPDATE_INTERVAL = 60000;  /* 60 secs */
-    private long FASTEST_INTERVAL = 5000; /* 5 secs */
-    private Location location = null;
+    private long UPDATE_INTERVAL = 120000;  /* 60 secs */
+    private long FASTEST_INTERVAL = 10000; /* 5 secs */
 
+    private String mSearchQuery = "";
+    private Location mLocation = new Location("My Location");
 
     private ArrayList<BaseItem> mItems = new ArrayList<BaseItem>();
     private ViewPager           mViewPager;
@@ -83,6 +85,9 @@ public class MainActivity extends ActionBarActivity implements
 
         context=this;
 
+        mLocation.setLatitude(36.1);
+        mLocation.setLongitude(-115.2);
+
         mListFragment = new ListFragment();
         mMapFragment = new MapViewFragment();
 
@@ -98,7 +103,7 @@ public class MainActivity extends ActionBarActivity implements
         // Attach the view pager to the tab strip
         tabsStrip.setViewPager(mViewPager);
 
-        populateItems();
+//        populateItems();
 
     }
 
@@ -113,7 +118,8 @@ public class MainActivity extends ActionBarActivity implements
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                performSearchQuery(s);
+                mSearchQuery = s;
+                performSearchQuery();
                 return true;
             }
 
@@ -127,36 +133,42 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     // TODO Li - fetch items
-    private void performSearchQuery(String searchQuery) {
+    private void performSearchQuery() {
 
         mItems.clear();
-        //populateItems();
-       ApiClient.getInstagramLocation(37.583680, -122.065058, new JsonHttpResponseHandler() {
-           @Override
-           public void onSuccess(int statusCode, Header[] headers, JSONObject response){
-               Log.d("DEBUG", response.toString());
-               // TODO
+        notifyFragmentAdapters();
+
+        // Populate some dummy items
+//        populateItems();
+        ApiClient.searchInstagram(mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("DEBUG", response.toString());
+                // TODO
 
 
-               try {
-                   mItems = BaseItem.fromJSONArray(response.getJSONArray("data"));
-                   notifyFragmentAdapters();
+                try {
+                    mItems.addAll(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
+                    notifyFragmentAdapters();
 
-               }
-               catch (JSONException e){
+                } catch (JSONException e) {
                     Log.d("ERROR", "failedd to parse; " + e);
-               }
-           }
-       });
+                }
+            }
+        });
     }
 
     // TODO Li - fetch items
     private void populateItems() {
-        mItems.add(BaseItem.fromJSON(null));
-        mItems.add(BaseItem.fromJSON(null));
-        mItems.add(BaseItem.fromJSON(null));
-        mItems.add(BaseItem.fromJSON(null));
-
+        BaseItem instance = BaseItem.getInstance();
+        try {
+            mItems.add(instance.fromJSON(null));
+            mItems.add(instance.fromJSON(null));
+            mItems.add(instance.fromJSON(null));
+            mItems.add(instance.fromJSON(null));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void notifyFragmentAdapters() {
@@ -292,22 +304,25 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
-        location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
 //            Toast.makeText(this, "GPS location was found!", Toast.LENGTH_SHORT).show();
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
-
-            // TODO call performSearch here since we know the location
-
-
-            MapViewFragment frag = mMapFragment;
-            if (frag != null)
-                frag.animateCamera(cameraUpdate);
+            performLocationUpdate(location);
             startLocationUpdates();
         } else {
             Toast.makeText(this, "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void performLocationUpdate(Location location) {
+        mLocation = location;
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+
+        if (mMapFragment != null)
+            mMapFragment.animateCamera(cameraUpdate);
+
+        performSearchQuery();
     }
 
     protected void startLocationUpdates() {
@@ -320,12 +335,17 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void onLocationChanged(Location location) {
-        // Report to the UI that the location was updated
-        String msg = "Updated Location: " +
-                Double.toString(location.getLatitude()) + "," +
-                Double.toString(location.getLongitude());
-//        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
+        if (mLocation.distanceTo(location) > 500.0) {
+            performLocationUpdate(location);
+
+            // Report to the UI that the location was updated
+            String msg = "Updated Location: " +
+                    Double.toString(location.getLatitude()) + "," +
+                    Double.toString(location.getLongitude());
+
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /*
@@ -370,6 +390,9 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
+    public Location getMapLocation() {
+        return mLocation;
+    }
 
 
     // Define a DialogFragment that displays the error dialog

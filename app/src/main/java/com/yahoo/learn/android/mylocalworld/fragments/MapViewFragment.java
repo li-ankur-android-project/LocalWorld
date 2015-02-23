@@ -2,6 +2,7 @@ package com.yahoo.learn.android.mylocalworld.fragments;
 
 
 import android.app.Activity;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,11 +11,14 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.yahoo.learn.android.mylocalworld.R;
@@ -92,7 +96,9 @@ public class MapViewFragment extends Fragment {
 
     public void setMarkers() {
         mGoogleMap.clear();
-        ArrayList<BaseItem> items = ((MainActivity) getActivity()).getItems();
+        MainActivity activity = (MainActivity) getActivity();
+        ArrayList<BaseItem> items = activity.getItems();
+
 
 //        BitmapDescriptor defaultMarker =
 //                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
@@ -111,6 +117,9 @@ public class MapViewFragment extends Fragment {
 
 
         }
+
+        if (items.size() > 0)
+            setMapBounds(activity.getMapLocation(), items, 10);
     }
 
 
@@ -125,6 +134,25 @@ public class MapViewFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement MyListFragment.OnItemSelectedListener");
         }
+    }
+
+
+    private void setMapBounds(Location currentLoc, ArrayList<BaseItem> items, int maxItems)
+    {
+        LatLngBounds.Builder bc = new LatLngBounds.Builder();
+
+        if(items.size() < maxItems)
+            maxItems = items.size();
+
+        for (int i=0; i<maxItems; i++) {
+            bc.include(items.get(i).getPosition());
+        }
+
+
+        bc.include(new LatLng(currentLoc.getLatitude(), currentLoc.getLongitude()));
+
+//        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bc.build(), 17));
+        animateCamera(CameraUpdateFactory.newLatLngBounds(bc.build(), 50));
     }
 
     public void animateCamera(CameraUpdate cameraUpdate) {
