@@ -1,6 +1,7 @@
 package com.yahoo.learn.android.mylocalworld.models;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.yahoo.learn.android.mylocalworld.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +48,7 @@ public class BaseItem {
         return externalURL;
     }
 
+    public int getIconResID() { return R.mipmap.ic_launcher; }
 
     public String toString() { return title; }
 

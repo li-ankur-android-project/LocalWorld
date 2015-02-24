@@ -36,8 +36,7 @@
         android:id="@+id/tvTitle"
         android:textStyle="bold"
         android:layout_alignTop="@id/ivIcon"
-        android:layout_alignRight="@+id/tvDesc"
-        android:layout_alignEnd="@+id/tvDesc"
+        android:layout_toLeftOf="@+id/ivProviderIcon"
         android:layout_toRightOf="@+id/ivIcon"
         android:layout_toEndOf="@+id/ivIcon" />
     <!--        android:layout_alignParentRight="true"
@@ -49,15 +48,30 @@
         android:layout_height="wrap_content"
         android:text="@string/item_desc"
         android:id="@+id/tvDesc"
+        android:layout_alignRight="@+id/tvDummy"
+        android:layout_alignEnd="@+id/tvDummy"
         android:layout_toRightOf="@+id/ivIcon"
         android:layout_toEndOf="@+id/ivIcon"
         android:layout_below="@+id/tvTitle"
-        android:layout_alignRight="@id/tvDummy"
-        android:layout_alignEnd="@id/tvDummy"
         android:autoLink="all"
         android:linksClickable="true"
         android:maxLines="3"
         android:ellipsize="end" />
+
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@mipmap/ic_launcher"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:id="@+id/ivProviderIcon"
+        android:layout_alignRight="@id/tvDesc"
+        android:layout_alignEnd="@id/tvDesc"
+        android:layout_alignTop="@id/tvTitle"
+        android:layout_alignBottom="@id/tvTitle"
+        android:layout_below="@id/tvDummy"
+        />
+
 
     <TextView
         android:layout_width="wrap_content"

@@ -1,6 +1,7 @@
 package com.yahoo.learn.android.mylocalworld.models;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.yahoo.learn.android.mylocalworld.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +12,15 @@ import org.json.JSONObject;
 public class InstagramItem extends BaseItem {
     private static final InstagramItem      mInstance = new InstagramItem();
 
+    protected String    userID;
+    protected String    userName;
+
+    @Override
+    public String getTitle() {
+        return "@" + userID;
+    }
+
+    public int getIconResID() { return R.mipmap.ic_instagram; }
 
 
     public InstagramItem fromJSON(JSONObject jPhoto) throws JSONException {
@@ -26,6 +36,10 @@ public class InstagramItem extends BaseItem {
         JSONObject images = jPhoto.getJSONObject("images");
         item.imageIconURL = images.getJSONObject("thumbnail").getString("url");
         item.highResImageURL = images.getJSONObject("low_resolution").getString("url");
+
+        JSONObject jUser = jPhoto.getJSONObject("user");
+        item.userID = jUser.getString("username");
+        item.userName = jUser.getString("full_name");
 
         return item;
     }

@@ -1,6 +1,7 @@
 package com.yahoo.learn.android.mylocalworld.models;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.yahoo.learn.android.mylocalworld.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 public class YelpItem extends BaseItem {
     private static final YelpItem      mInstance = new YelpItem();
 
+    public int getIconResID() { return R.mipmap.ic_yelp; }
 
 
     public YelpItem fromJSON(JSONObject jsonObject) throws JSONException {

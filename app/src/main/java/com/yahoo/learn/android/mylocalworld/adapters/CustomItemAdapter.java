@@ -27,25 +27,30 @@ public class CustomItemAdapter {
         TextView tvDesc = (TextView) view.findViewById(R.id.tvDesc);
         ImageView ivHighResImage = (ImageView) view.findViewById(R.id.ivHighResImage);
         TextView tvDummy = (TextView) view.findViewById(R.id.tvDummy);
+        ImageView ivProviderIcon = (ImageView) view.findViewById(R.id.ivProviderIcon);
 
         tvTitle.setText(item.getTitle());
         tvDesc.setText(item.getDesc());
+        ivProviderIcon.setImageResource(item.getIconResID());
+        ivIcon.setImageResource(0);
+        Picasso.with(view.getContext()).load(item.getImageIconURL()).into(ivIcon);
 
         tvDummy.setVisibility(isListView ? View.VISIBLE : View.GONE);
 
-        if (item.getHighResImageURL() != null) {
+        if (isListView && (item instanceof InstagramItem)) {
             ivIcon.setVisibility(View.GONE);
             tvTitle.setVisibility(View.GONE);
             tvDesc.setVisibility(View.GONE);
             ivHighResImage.setVisibility(View.VISIBLE);
+            ivProviderIcon.setVisibility(View.GONE);
             ivHighResImage.setImageResource(0);
             Picasso.with(view.getContext()).load(item.getHighResImageURL()).into(ivHighResImage);
         } else {
             ivIcon.setVisibility(View.VISIBLE);
             tvTitle.setVisibility(View.VISIBLE);
             tvDesc.setVisibility(View.VISIBLE);
+            ivProviderIcon.setVisibility(View.VISIBLE);
             ivHighResImage.setVisibility(View.GONE);
-            Picasso.with(view.getContext()).load(item.getImageIconURL()).into(ivIcon);
         }
 
         return view;
