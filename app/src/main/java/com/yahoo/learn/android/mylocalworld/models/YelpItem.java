@@ -26,8 +26,8 @@ public class YelpItem extends BaseItem {
 
         baseItem.imageIconURL = jsonObject.getString("snippet_image_url");
         //TODO Yelp doesn't provide description
-        baseItem.desc = "From Yelp";
-        baseItem.externalURL = jsonObject.getString("url");
+        baseItem.desc = jsonObject.getString("snippet_text");
+        baseItem.externalURL = jsonObject.getString("mobile_url");
 
         return baseItem;
 

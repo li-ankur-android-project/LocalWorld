@@ -186,6 +186,7 @@ public class MainActivity extends ActionBarActivity implements
                     addItemsToList(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
                 } catch (JSONException e) {
                     Log.e("SearchQueryInstagramFailure", "Failed: " + e);
+                    e.printStackTrace();
                 }
             }
         });
@@ -206,6 +207,7 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject response){
                 Log.e("SearchQueryYelpFailure", "Failed: " + t);
+                t.printStackTrace();;
             }
         });
 

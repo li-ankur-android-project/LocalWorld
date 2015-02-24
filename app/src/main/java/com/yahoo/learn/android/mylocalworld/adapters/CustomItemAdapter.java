@@ -10,6 +10,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.squareup.picasso.Picasso;
 import com.yahoo.learn.android.mylocalworld.R;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
+import com.yahoo.learn.android.mylocalworld.models.InstagramItem;
+import com.yahoo.learn.android.mylocalworld.models.YelpItem;
 
 /**
  * Created by ankurj on 2/21/2015.
@@ -50,8 +52,10 @@ public class CustomItemAdapter {
     }
 
     public static float getColorForMarker(BaseItem item) {
-        if (item.getHighResImageURL() != null) {
+        if (item instanceof InstagramItem) {
             return BitmapDescriptorFactory.HUE_ORANGE;
+        } else if (item instanceof YelpItem) {
+            return BitmapDescriptorFactory.HUE_AZURE;
         } else {
             return BitmapDescriptorFactory.HUE_GREEN;
         }
