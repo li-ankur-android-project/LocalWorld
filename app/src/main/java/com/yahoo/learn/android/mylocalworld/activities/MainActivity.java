@@ -2,7 +2,6 @@ package com.yahoo.learn.android.mylocalworld.activities;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
@@ -27,7 +26,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.yahoo.learn.android.mylocalworld.R;
@@ -59,15 +57,13 @@ public class MainActivity extends ActionBarActivity implements
         LocationListener, MapViewFragment.OnItemSelectedListener{
 
     private final CustomWindowAdapter mCustomWindowAdapter = new CustomWindowAdapter(this);
-    private SupportMapFragment mapFragment;
-    private GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 300000;  /* 5 min */
     private long FASTEST_INTERVAL = 5000; /* 5 secs */
 
     private String mSearchQuery = "";
-    private Location mLocation = new Location("My Location");
+    private Location mLocation = null;
 
     private ArrayList<BaseItem> mItems = new ArrayList<BaseItem>();
     private ViewPager           mViewPager;
@@ -87,9 +83,6 @@ public class MainActivity extends ActionBarActivity implements
         setContentView(R.layout.activity_main);
 
 //        context=this;
-
-        mLocation.setLatitude(36.1);
-        mLocation.setLongitude(-115.2);
 
         mListFragment = new ListFragment();
         mMapFragment = new MapViewFragment();
@@ -218,10 +211,9 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     protected void loadMap(GoogleMap googleMap) {
-        map = googleMap;
-        if (map != null) {
+        if (googleMap != null) {
 //            Toast.makeText(this, "Map Fragment was loaded properly!", Toast.LENGTH_SHORT).show();
-            map.setMyLocationEnabled(true);
+            googleMap.setMyLocationEnabled(true);
 
             // Now that map has loaded, let's get our location!
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -229,9 +221,10 @@ public class MainActivity extends ActionBarActivity implements
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this).build();
 
-            map.setInfoWindowAdapter(mCustomWindowAdapter);
+            googleMap.setInfoWindowAdapter(mCustomWindowAdapter);
 
 
+            focusMapOnCurrentLocation();
             connectClient();
         } else {
             Toast.makeText(this, "Error - Map was null!!", Toast.LENGTH_SHORT).show();
@@ -322,23 +315,34 @@ public class MainActivity extends ActionBarActivity implements
         // Display the connection status
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (location != null) {
-//            Toast.makeText(this, "GPS location was found!", Toast.LENGTH_SHORT).show();
             performLocationUpdate(location);
             startLocationUpdates();
         } else {
-            Toast.makeText(this, "Current location was null, enable GPS on emulator!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Current location was null, enable GPS on emulator!", Toast.LENGTH_LONG).show();
         }
     }
 
     private void performLocationUpdate(Location location) {
         mLocation = location;
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
 
-        if (mMapFragment != null)
-            mMapFragment.animateCamera(cameraUpdate);
+        focusMapOnCurrentLocation();
 
         performSearchQuery();
+        // Report to the UI that the location was updated
+        String msg = "Updated Location: " +
+                Double.toString(location.getLatitude()) + "," +
+                Double.toString(location.getLongitude());
+
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void focusMapOnCurrentLocation() {
+        if ((mMapFragment != null) && (mLocation != null)) {
+            LatLng latLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 17);
+
+            mMapFragment.animateCamera(cameraUpdate);
+        }
     }
 
     protected void startLocationUpdates() {
@@ -354,15 +358,8 @@ public class MainActivity extends ActionBarActivity implements
         // TODO - ensure that app is in the foreground before calling any of the below code
 
         // Check if we are far enough (500 meters) from the previous saved location
-        if (mLocation.distanceTo(location) > 500.0) {
+        if ((mLocation == null) || (mLocation.distanceTo(location) > 500.0)) {
             performLocationUpdate(location);
-
-            // Report to the UI that the location was updated
-            String msg = "Updated Location: " +
-                    Double.toString(location.getLatitude()) + "," +
-                    Double.toString(location.getLongitude());
-
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         }
     }
 

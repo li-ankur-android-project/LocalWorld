@@ -25,7 +25,7 @@ public class InstagramItem extends BaseItem {
 
         JSONObject images = jPhoto.getJSONObject("images");
         item.imageIconURL = images.getJSONObject("thumbnail").getString("url");
-        item.highResImageURL = images.getJSONObject("standard_resolution").getString("url");
+        item.highResImageURL = images.getJSONObject("low_resolution").getString("url");
 
         return item;
     }

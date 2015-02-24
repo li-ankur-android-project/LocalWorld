@@ -96,9 +96,12 @@ public class MapViewFragment extends Fragment {
 
     public void setMarkers() {
         mGoogleMap.clear();
+
         MainActivity activity = (MainActivity) getActivity();
         ArrayList<BaseItem> items = activity.getItems();
 
+        if (items.size() == 0)
+            return;
 
 //        BitmapDescriptor defaultMarker =
 //                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
@@ -118,8 +121,7 @@ public class MapViewFragment extends Fragment {
 
         }
 
-        if (items.size() > 0)
-            setMapBounds(activity.getMapLocation(), items, 20);
+        setMapBounds(activity.getMapLocation(), items, 20);
     }
 
 
@@ -149,7 +151,8 @@ public class MapViewFragment extends Fragment {
         }
 
 
-        bc.include(new LatLng(currentLoc.getLatitude(), currentLoc.getLongitude()));
+        if (currentLoc != null)
+            bc.include(new LatLng(currentLoc.getLatitude(), currentLoc.getLongitude()));
 
 //        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bc.build(), 17));
         animateCamera(CameraUpdateFactory.newLatLngBounds(bc.build(), 50));
