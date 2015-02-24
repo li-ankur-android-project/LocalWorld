@@ -15,6 +15,8 @@ import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -70,6 +72,8 @@ public class MainActivity extends ActionBarActivity implements
     private ListFragment        mListFragment;
     private MapViewFragment     mMapFragment;
 
+    private ProgressBar         mPbFetch;
+
     /*
      * Define a request code to send to Google Play services This code is
      * returned in Activity.onActivityResult
@@ -83,6 +87,9 @@ public class MainActivity extends ActionBarActivity implements
         setContentView(R.layout.activity_main);
 
 //        context=this;
+
+        mPbFetch = (ProgressBar) findViewById(R.id.pbFetch);
+        mPbFetch.setVisibility(View.GONE);
 
         mListFragment = new ListFragment();
         mMapFragment = new MapViewFragment();
@@ -113,17 +120,45 @@ public class MainActivity extends ActionBarActivity implements
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                mSearchQuery = s;
-                performSearchQuery();
+                Log.d("SearchQueryCalled", "Perform search text submitted - " + s);
+                if (replaceSearchQuery(s)) {
+                    Log.d("SearchQueryExecuting", "Perform search text submitted - " + s);
+                    performSearchQuery();
+                }
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
+                if (s.trim().length() == 0) {
+                    if (replaceSearchQuery(s)) {
+                        Log.d("SearchRemovedExecuting", "Perform search text cleaned up - " + s);
+                        performSearchQuery();
+                        return true;
+                    }
+                }
                 return false;
             }
+
         });
 
+        return true;
+    }
+
+
+    // Atomically set the search query, return true if the query is a new string
+    private synchronized boolean replaceSearchQuery(String s) {
+        if (s == null)
+            s = "";
+
+        s = s.trim();
+        if (mSearchQuery.equals(s)) {
+            Log.d("SearchQueryDuplicate", "Duplicate Search: " + s);
+            return false;
+        }
+
+        Log.d("SearchQueryReplace", "Current " + mSearchQuery + ", new " + s);
+        mSearchQuery = s;
         return true;
     }
 
@@ -134,7 +169,10 @@ public class MainActivity extends ActionBarActivity implements
             return;
         }
 
+        Log.d("SearchQueryLocExecuting", "Perform search " + mLocation.getLatitude() + ":" + mLocation.getLongitude() + " - " + mSearchQuery);
+
         mItems.clear();
+        mPbFetch.setVisibility(View.VISIBLE);
         notifyFragmentAdapters();
 
         // Populate some dummy items
@@ -147,7 +185,7 @@ public class MainActivity extends ActionBarActivity implements
                 try {
                     addItemsToList(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
                 } catch (JSONException e) {
-                    Log.e("ERROR", "failedd to parse; " + e);
+                    Log.e("SearchQueryInstagramFailure", "Failed: " + e);
                 }
             }
         });
@@ -167,7 +205,7 @@ public class MainActivity extends ActionBarActivity implements
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject response){
-                Log.d("DEBUG", "Failure: " + response.toString());
+                Log.e("SearchQueryYelpFailure", "Failed: " + t);
             }
         });
 
@@ -177,6 +215,7 @@ public class MainActivity extends ActionBarActivity implements
     private synchronized void addItemsToList(List<BaseItem> items) {
         mItems.addAll(items);
         Collections.sort(mItems, new LocationComparator(mLocation));
+        mPbFetch.setVisibility(View.GONE);
         notifyFragmentAdapters();
     }
 
