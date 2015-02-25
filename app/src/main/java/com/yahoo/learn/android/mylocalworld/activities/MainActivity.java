@@ -196,7 +196,7 @@ public class MainActivity extends ActionBarActivity implements
         ApiClient.getYelpLocationByLatLong(mSearchQuery, mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", "Success: " + response.toString());
+                Log.d("DEBUG", "Yelp Success: " + response.toString());
                 try {
                     addItemsToList(YelpItem.getInstance().fromJSONArray(response.getJSONArray("businesses")));
                 } catch (JSONException e) {
@@ -232,11 +232,6 @@ public class MainActivity extends ActionBarActivity implements
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
