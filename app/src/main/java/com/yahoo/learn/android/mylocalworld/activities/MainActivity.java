@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.yahoo.learn.android.mylocalworld.fragments.ListFragment;
 import com.yahoo.learn.android.mylocalworld.fragments.MapViewFragment;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
+import com.yahoo.learn.android.mylocalworld.models.GooglePlacesItem;
 import com.yahoo.learn.android.mylocalworld.models.InstagramItem;
 import com.yahoo.learn.android.mylocalworld.models.YelpItem;
 import com.yahoo.learn.android.mylocalworld.util.LocationComparator;
@@ -176,22 +178,26 @@ public class MainActivity extends ActionBarActivity implements
         mPbFetch.setVisibility(View.VISIBLE);
         notifyFragmentAdapters();
 
+
         // Populate some dummy items
 //        populateItems();
-        ApiClient.searchInstagram(mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", response.toString());
 
-                try {
-                    addItemsToList(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
-                } catch (JSONException e) {
-                    Log.e("ERROR", "Search Query InstagramFailure: " + e);
-                    e.printStackTrace();
+        // Instagram doesnt support text search, so exclude it from search results
+        if ((mSearchQuery == null) || (mSearchQuery.trim().length() == 0)) {
+            ApiClient.searchInstagram(mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    Log.d("DEBUG", response.toString());
+
+                    try {
+                        addItemsToList(InstagramItem.getInstance().fromJSONArray(response.getJSONArray("data")));
+                    } catch (JSONException e) {
+                        Log.e("SearchQueryInstFail", "Failed: " + e);
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
-
+            });
+        }
 
 
         ApiClient.getYelpLocationByLatLong(mSearchQuery, mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
@@ -208,8 +214,28 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject response){
                 Log.e("SearchQueryYelpFailure", "Failed: " + t);
+                t.printStackTrace();
+            }
+        });
+
+
+        ApiClient.getGooglePlaces(mSearchQuery, mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("GoogleAPISuccess", response.toString());
+                try {
+                    addItemsToList(GooglePlacesItem.getInstance().fromJSONArray(response.getJSONArray("results")));
+                } catch (JSONException e) {
+                    Log.e("SearchQueryParseFail", "failed to parse; " + e);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject response){
+                Log.e("SearchQueryPlaceFailure", "Failed: " + t);
                 t.printStackTrace();;
             }
+
         });
 
     }

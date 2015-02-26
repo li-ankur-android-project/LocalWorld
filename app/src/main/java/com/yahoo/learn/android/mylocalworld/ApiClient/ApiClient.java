@@ -1,5 +1,7 @@
 package com.yahoo.learn.android.mylocalworld.ApiClient;
 
+import android.view.Window;
+
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -22,6 +24,22 @@ public class ApiClient {
     private static final String INSTAGRAM_MEDIA_URL = "https://api.instagram.com/v1/media/search";
     private static final String INSTAGRAM_CLIENT_ID = "68ecacb5efa94844a70e7a6e55e44d2d";
     private static final String YELP_SEARCH_URL = "http://api.yelp.com/v2/search";
+    private static final String GOOGLE_CLIENT_ID = "AIzaSyC7vS0Zz7YiGWRR-RYBdBRo3Mb-IfP6-5w";
+    private static final String GOOGLE_PLACES_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+
+    public static void getGooglePlaces(String searchTerm, double lat, double lng, JsonHttpResponseHandler handler){
+        RequestParams params = new RequestParams();
+        params.put("location", lat + "," + lng);
+        if ((searchTerm != null) && (searchTerm.trim().length() > 0))
+            params.put("keyword", searchTerm);
+        params.put("radius", 1000);
+        params.put("key", GOOGLE_CLIENT_ID);
+
+        new AsyncHttpClient().get(GOOGLE_PLACES_URL, params, handler);
+
+    }
+
+
 
     public static void getInstagramLocation(double lat, double lng, JsonHttpResponseHandler handler) {
         RequestParams params = new RequestParams();

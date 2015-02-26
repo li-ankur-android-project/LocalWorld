@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.squareup.picasso.Picasso;
 import com.yahoo.learn.android.mylocalworld.R;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
+import com.yahoo.learn.android.mylocalworld.models.GooglePlacesItem;
 import com.yahoo.learn.android.mylocalworld.models.InstagramItem;
 import com.yahoo.learn.android.mylocalworld.models.YelpItem;
 
@@ -66,6 +67,8 @@ public class CustomItemAdapter {
             return BitmapDescriptorFactory.HUE_ORANGE;
         } else if (item instanceof YelpItem) {
             return BitmapDescriptorFactory.HUE_AZURE;
+        } else if (item instanceof GooglePlacesItem) {
+            return BitmapDescriptorFactory.HUE_RED;
         } else {
             return BitmapDescriptorFactory.HUE_GREEN;
         }
