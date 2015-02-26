@@ -37,11 +37,11 @@
         android:text="@string/item_title"
         android:id="@+id/tvTitle"
         android:textStyle="bold"
-        android:layout_alignTop="@id/ivIcon"
         android:layout_toLeftOf="@+id/ivProviderIcon"
         android:layout_toRightOf="@+id/ivIcon"
         android:layout_toEndOf="@+id/ivIcon"
-        android:layout_marginRight="5dp" />
+        android:layout_marginRight="5dp"
+        android:layout_below="@+id/tvDummy" />
     <!--        android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             -->
@@ -51,19 +51,17 @@
         android:layout_height="wrap_content"
         android:text="@string/item_desc"
         android:id="@+id/tvDesc"
-        android:layout_alignRight="@+id/tvDummy"
-        android:layout_alignEnd="@+id/tvDummy"
         android:layout_toRightOf="@+id/ivIcon"
-        android:layout_toEndOf="@+id/ivIcon"
         android:layout_below="@+id/tvTitle"
         android:autoLink="all"
         android:linksClickable="true"
         android:maxLines="3"
         android:ellipsize="end"
-        android:layout_marginRight="5dp"
         android:enabled="false"
         android:textColor="@android:color/darker_gray"
-        android:layout_marginTop="5dp" />
+        android:layout_marginTop="5dp"
+        android:layout_alignRight="@+id/tvTitle"
+         />
 
     <ImageView
         android:layout_width="16dp"
@@ -72,13 +70,9 @@
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         android:id="@+id/ivProviderIcon"
-        android:layout_alignRight="@id/tvDesc"
-        android:layout_alignEnd="@id/tvDesc"
-        android:layout_alignTop="@id/tvTitle"
-        android:layout_alignBottom="@id/tvTitle"
+        android:layout_alignParentRight="true"
         android:layout_below="@id/tvDummy"
         />
-
 
     <TextView
         android:layout_width="wrap_content"
