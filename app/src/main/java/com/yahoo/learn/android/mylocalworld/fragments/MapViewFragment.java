@@ -97,7 +97,7 @@ public class MapViewFragment extends Fragment {
     public void setMarkers() {
         if (mGoogleMap == null)
             return;
-        
+
         mGoogleMap.clear();
 
         MainActivity activity = (MainActivity) getActivity();

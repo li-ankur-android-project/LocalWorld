@@ -26,7 +26,7 @@ public class YelpItem extends BaseItem {
 
         baseItem.address = jsonObject.getJSONObject("location").getString("address");
 
-        baseItem.imageIconURL = jsonObject.getString("snippet_image_url");
+        baseItem.imageIconURL = jsonObject.getString("image_url");
         //TODO Yelp doesn't provide description
         baseItem.desc = jsonObject.getString("snippet_text");
         baseItem.externalURL = jsonObject.getString("mobile_url");

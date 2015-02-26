@@ -42,14 +42,6 @@ public class CustomItemAdapter {
 
         view.setTag(R.id.TAG_VIEW_EXTERNAL_LINK, item.getExternalURL());
 
-        if (isListView) {
-            float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, view.getContext().getResources().getDisplayMetrics());
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) ivIcon.getLayoutParams();
-            params.height = (int)pixels;
-            params.width = (int)pixels;
-            ivIcon.setLayoutParams(params);
-        }
-
         if (isListView && (item instanceof InstagramItem)) {
             ivIcon.setVisibility(View.GONE);
             tvTitle.setVisibility(View.GONE);
