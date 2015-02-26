@@ -61,8 +61,7 @@ public class ListFragment extends Fragment {
 
 
     public void onItemsChanged() {
-//        mItems.clear();
-//        mItems.addAll(((MainActivity) getActivity()).getItems());
-        mAdapter.notifyDataSetChanged();
+        if (mAdapter != null)
+            mAdapter.notifyDataSetChanged();
     }
 }
