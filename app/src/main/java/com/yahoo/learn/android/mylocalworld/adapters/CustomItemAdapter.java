@@ -35,6 +35,8 @@ public class CustomItemAdapter {
         tvTitle.setText(item.getTitle());
         tvDesc.setText(item.getDesc());
         ivProviderIcon.setImageResource(item.getIconResID());
+        ivIcon.setImageResource(0);
+        Picasso.with(view.getContext()).load(item.getImageIconURL()).into(ivIcon);
 
         tvDummy.setVisibility(isListView ? View.VISIBLE : View.GONE);
 
