@@ -474,6 +474,9 @@ public class MainActivity extends ActionBarActivity implements
 
     public void onItemClick(View view) {
         String url = (String)view.getTag(R.id.TAG_VIEW_EXTERNAL_LINK);
+        if (url == null || url.length() ==0)
+            return;
+        
         Log.d("DEBUG", "item clicked. Going to URL: " + view.getTag(R.id.TAG_VIEW_EXTERNAL_LINK));
 
         Intent i = new Intent(Intent.ACTION_VIEW);
