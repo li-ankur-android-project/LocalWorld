@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -206,7 +207,7 @@ public class MainActivity extends ActionBarActivity implements
                 try {
                     addItemsToList(YelpItem.getInstance().fromJSONArray(response.getJSONArray("businesses")));
                 } catch (JSONException e) {
-                    Log.e("ERROR", "failedd to parse; " + e);
+                    Log.e("ERROR", "failed to parse; " + e);
                 }
             }
 
@@ -469,6 +470,15 @@ public class MainActivity extends ActionBarActivity implements
 
     public Location getMapLocation() {
         return mLocation;
+    }
+
+    public void onItemClick(View view) {
+        String url = (String)view.getTag(R.id.TAG_VIEW_EXTERNAL_LINK);
+        Log.d("DEBUG", "item clicked. Going to URL: " + view.getTag(R.id.TAG_VIEW_EXTERNAL_LINK));
+
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 
 

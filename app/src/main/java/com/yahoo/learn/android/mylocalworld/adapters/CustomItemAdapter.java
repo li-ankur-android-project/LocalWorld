@@ -36,10 +36,10 @@ public class CustomItemAdapter {
         tvTitle.setText(item.getTitle());
         tvDesc.setText(item.getDesc());
         ivProviderIcon.setImageResource(item.getIconResID());
-        ivIcon.setImageResource(0);
-        Picasso.with(view.getContext()).load(item.getImageIconURL()).into(ivIcon);
 
         tvDummy.setVisibility(isListView ? View.VISIBLE : View.GONE);
+
+        view.setTag(R.id.TAG_VIEW_EXTERNAL_LINK, item.getExternalURL());
 
         if (isListView) {
             float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, view.getContext().getResources().getDisplayMetrics());

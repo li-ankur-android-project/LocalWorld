@@ -159,7 +159,8 @@ public class MapViewFragment extends Fragment {
     }
 
     public void animateCamera(CameraUpdate cameraUpdate) {
-        mGoogleMap.animateCamera(cameraUpdate);
+        if (mGoogleMap != null)
+            mGoogleMap.animateCamera(cameraUpdate);
     }
 }
 

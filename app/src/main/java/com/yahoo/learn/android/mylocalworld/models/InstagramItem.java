@@ -41,6 +41,8 @@ public class InstagramItem extends BaseItem {
         item.userID = jUser.getString("username");
         item.userName = jUser.getString("full_name");
 
+        item.externalURL = jPhoto.getString("link");
+
         return item;
     }
 
