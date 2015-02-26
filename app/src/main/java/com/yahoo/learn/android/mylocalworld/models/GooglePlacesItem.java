@@ -12,6 +12,8 @@ import org.json.JSONObject;
 public class GooglePlacesItem extends BaseItem {
     private static final GooglePlacesItem   mInstance = new GooglePlacesItem();
     private String detailReferenceID;
+    private static final String GOOGLE_PHOTO_BASE_URL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=120&photoreference=";
+    private static final String GOOGLE_CLIENT_ID = "AIzaSyC7vS0Zz7YiGWRR-RYBdBRo3Mb-IfP6-5w";
 
     public int getIconResID() { return R.mipmap.ic_gplaces; }
 
@@ -21,7 +23,12 @@ public class GooglePlacesItem extends BaseItem {
         JSONObject jLocation = jPlace.getJSONObject("geometry").getJSONObject("location");
         item.position = new LatLng(jLocation.getDouble("lat"), jLocation.getDouble("lng"));
 
-        item.imageIconURL = jPlace.getString("icon");
+        if (jPlace.has("photos") && jPlace.getJSONObject("photos").has("photo_reference")) {
+            String imageRefID = jPlace.getJSONObject("photos").getString("photo_reference");
+            item.imageIconURL = GOOGLE_PHOTO_BASE_URL + imageRefID + "&key="+GOOGLE_CLIENT_ID;
+        }
+        else item.imageIconURL = jPlace.getString("icon");
+
         item.title = jPlace.getString("name");
 
         item.detailReferenceID = jPlace.isNull("reference") ? null : jPlace.getString("reference");
