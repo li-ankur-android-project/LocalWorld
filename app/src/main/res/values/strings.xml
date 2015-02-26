@@ -6,4 +6,5 @@
     <string name="search">Search</string>
     <string name="item_title">Title</string>
     <string name="item_desc">Desc</string>
+    <item type="id" name="TAG_VIEW_EXTERNAL_LINK"/>
 </resources>
