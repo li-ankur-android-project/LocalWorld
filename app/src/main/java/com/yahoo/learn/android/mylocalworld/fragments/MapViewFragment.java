@@ -111,12 +111,17 @@ public class MapViewFragment extends Fragment {
 
         for (int i=0, len=items.size(); i<len; i++) {
             BaseItem item = items.get(i);
+            LatLng itemPosition = item.getPosition();
+            if (itemPosition == null)
+                // Non geo item, ads
+                continue;
+
             BitmapDescriptor defaultMarker =
                     BitmapDescriptorFactory.defaultMarker(CustomItemAdapter.getColorForMarker(item));
 
             // Creates and adds marker to the map
             Marker marker = mGoogleMap.addMarker(new MarkerOptions()
-                    .position(item.getPosition())
+                    .position(itemPosition)
                     .title(item.getTitle())
                     .snippet("" + i)
                     .icon(defaultMarker));
@@ -150,7 +155,9 @@ public class MapViewFragment extends Fragment {
             maxItems = items.size();
 
         for (int i=0; i<maxItems; i++) {
-            bc.include(items.get(i).getPosition());
+            LatLng pos = items.get(i).getPosition();
+            if (pos != null)
+                bc.include(pos);
         }
 
 

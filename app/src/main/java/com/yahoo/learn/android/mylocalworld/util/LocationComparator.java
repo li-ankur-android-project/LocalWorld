@@ -2,6 +2,7 @@ package com.yahoo.learn.android.mylocalworld.util;
 
 import android.location.Location;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
 
 import java.util.Comparator;
@@ -21,6 +22,12 @@ public class LocationComparator implements Comparator<BaseItem> {
         Location lhsLocation = createLocation(lhs, "left");
         Location rhsLocation = createLocation(rhs, "right");
 
+        if (lhsLocation == null)
+            return -1;
+
+        if (rhsLocation == null)
+            return 1;
+
         float ldist = mLocation.distanceTo(lhsLocation);
         float rdist = mLocation.distanceTo(rhsLocation);
 
@@ -29,6 +36,9 @@ public class LocationComparator implements Comparator<BaseItem> {
 
     private Location createLocation(BaseItem item, String name) {
         Location loc = new Location(name);
+        if (item.getPosition() == null)
+            return null;
+
         loc.setLatitude(item.getPosition().latitude);
         loc.setLongitude(item.getPosition().longitude);
 

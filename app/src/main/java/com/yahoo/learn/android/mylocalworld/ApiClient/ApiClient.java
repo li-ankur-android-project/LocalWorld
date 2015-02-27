@@ -6,6 +6,9 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.ParseException;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Token;
@@ -27,6 +30,9 @@ public class ApiClient {
     private static final String GOOGLE_CLIENT_ID = "AIzaSyC7vS0Zz7YiGWRR-RYBdBRo3Mb-IfP6-5w";
     private static final String GOOGLE_PLACES_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
 
+    private static final String GEMINI_AD_URL_FULL = "https://n.gemini.yahoo.com/ssi?format=json&ve=2&ic=1&sz=3x3&nc=1&tt=1&se=4494903&im=63&ff=&cc=STRM&tk=10&hs=1&ui=developer&ri=a33a476e&pu=&sl=&pc=&nr=2&mi=";
+    private static final String GEMINI_AD_URL = "https://n.gemini.yahoo.com/ssi";
+
     public static void getGooglePlaces(String searchTerm, double lat, double lng, JsonHttpResponseHandler handler){
         RequestParams params = new RequestParams();
         params.put("location", lat + "," + lng);
@@ -39,6 +45,45 @@ public class ApiClient {
 
     }
 
+
+
+    public static void getGeminiAd(int numAds, double lat, double lng, JsonHttpResponseHandler handler) {
+        RequestParams params = new RequestParams();
+
+        params.put("format", "json");
+        params.put("ve", 2);
+        params.put("tk", "" + numAds);
+        params.put("ri", "" + (long) (2e9 * Math.random()));
+        params.put("hs", "1");
+        params.put("mi", "");
+        params.put("se", "4494903");
+        params.put("cc", "STRM");
+        params.put("sz", "3x3");
+        params.put("ir", 1);
+        params.put("la", lat);
+        params.put("lo", lng);
+
+
+        Header xfHeader = new Header() {
+            @Override
+            public String getName() {
+                return "X-Forwarded-For";
+            }
+
+            @Override
+            public String getValue() {
+                return "50.156.22.183";
+            }
+
+            @Override
+            public HeaderElement[] getElements() throws ParseException {
+                return new HeaderElement[0];
+            }
+        };
+
+
+        new AsyncHttpClient().get(null, GEMINI_AD_URL, new Header[] {xfHeader}, params, handler);
+    }
 
 
     public static void getInstagramLocation(double lat, double lng, JsonHttpResponseHandler handler) {

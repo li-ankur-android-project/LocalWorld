@@ -40,6 +40,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.yahoo.learn.android.mylocalworld.fragments.ListFragment;
 import com.yahoo.learn.android.mylocalworld.fragments.MapViewFragment;
 import com.yahoo.learn.android.mylocalworld.models.BaseItem;
+import com.yahoo.learn.android.mylocalworld.models.GeminiAdItem;
 import com.yahoo.learn.android.mylocalworld.models.GooglePlacesItem;
 import com.yahoo.learn.android.mylocalworld.models.InstagramItem;
 import com.yahoo.learn.android.mylocalworld.models.YelpItem;
@@ -233,11 +234,31 @@ public class MainActivity extends ActionBarActivity implements
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject response){
                 Log.e("SearchQueryPlaceFailure", "Failed: " + t);
-                t.printStackTrace();;
+                t.printStackTrace();
             }
 
         });
 
+
+        ApiClient.getGeminiAd(1, mLocation.getLatitude(), mLocation.getLongitude(), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("AdSuccess", response.toString());
+                try {
+                    addItemsToList(GeminiAdItem.getInstance().fromJSONArray(response.getJSONArray("ads")));
+                } catch (JSONException e) {
+                    Log.e("SearchQueryParseFail", "failed to parse; " + e);
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject response){
+                Log.e("AdFailure", "Failed: " + t);
+                t.printStackTrace();;
+            }
+
+        });
     }
 
 
